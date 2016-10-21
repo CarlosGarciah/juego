@@ -78,10 +78,11 @@ def main():
     alien1=Alien(1.2,1.4)
     alien2=Alien(0.2,1.9)
     alien3=Alien(0.1,1.5)
+    pygame.mixer.music.load("sonido.mp3")
+    pygame.mixer.music.play(2)
 
     while True:
-        pygame.mixer.music.load("sonido.mp3")
-        pygame.mixer.music.play(1)
+
         keys = pygame.key.get_pressed()
         for eventos in pygame.event.get():
             if eventos.type == QUIT:
