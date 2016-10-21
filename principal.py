@@ -80,6 +80,8 @@ def main():
     alien3=Alien(0.1,1.5)
 
     while True:
+        pygame.mixer.music.load("sonido.mp3")
+        pygame.mixer.music.play(1)
         keys = pygame.key.get_pressed()
         for eventos in pygame.event.get():
             if eventos.type == QUIT:
