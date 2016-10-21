@@ -7,10 +7,6 @@ from pygame.locals import *
 WIDTH = 840
 HEIGHT = 580
 
-imagenDisparo = pygame.image.load("disparo.png")
-rectanguloDisparo = imagenDisparo.get_rect()
-disparoActivo = False
-
 
 # Clases
 # ---------------------------------------------------------------------
