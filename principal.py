@@ -53,6 +53,7 @@ class Alien(pygame.sprite.Sprite):
                     nave1.rect.centery = 1000
 
 
+
 # ---------------------------------------------------------------------
 
 # Funciones
@@ -67,17 +68,22 @@ def load_image(filename, transparent=False):
     return image
 
 
+
+
+
 # ---------------------------------------------------------------------
 
 def main():
+
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Pruebas Pygame")
 
     background_image = load_image('fondo.jpg')
     nave1=Nave()
     alien1=Alien(1.2,1.4)
-    alien2=Alien(0.2,1.9)
-    alien3=Alien(0.1,1.5)
+    alien2=Alien(0.4,1.9)
+    alien3=Alien(0.2,1.5)
+    alien4=Alien(0.1,1.5)
     pygame.mixer.music.load("sonido.mp3")
     pygame.mixer.music.play(2)
 
@@ -92,9 +98,11 @@ def main():
         screen.blit(alien1.image, alien1.rect)
         screen.blit(alien2.image, alien2.rect)
         screen.blit(alien3.image, alien3.rect)
+        screen.blit(alien4.image, alien4.rect)
         alien1.mover(nave1)
         alien2.mover(nave1)
         alien3.mover(nave1)
+        alien4.mover(nave1)
         nave1.mover(keys)
         screen.blit(nave1.image, nave1.rect)
         pygame.display.flip()
