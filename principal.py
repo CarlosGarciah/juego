@@ -1,4 +1,3 @@
-
 # Módulos
 import sys, pygame
 from pygame.locals import *
@@ -17,31 +16,31 @@ class Nave(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 8
         self.rect.centery = HEIGHT / 1.5
+        self.velocidad = 5
 
-    def mover(self,keys):
-        if self.rect.top >= 0:
-            if keys[K_LEFT]:
-                self.rect.centerx -= 1
-            if self.rect.bottom <= WIDTH:
-                if keys[K_RIGHT]:
-                    self.rect.centerx += 1
-                if keys[K_DOWN]:
-                    self.rect.centery += 1
-                if self.rect.bottom <= HEIGHT:
-                    if keys[K_UP]:
-                        self.rect.centery -= 1
+    def mover(self, keys):
+        if keys[K_LEFT] and self.rect.left > 0:
+            self.rect.centerx -= self.velocidad
+        if keys[K_RIGHT] and self.rect.right < WIDTH:
+            self.rect.centerx += self.velocidad
+        if keys[K_DOWN] and self.rect.bottom < HEIGHT:
+            self.rect.centery += self.velocidad
+        if keys[K_UP] and self.rect.top > 0:
+            self.rect.centery -= self.velocidad
 
+    def posicion_disparo(self):
+        return self.rect.midright
 
 
 class Alien(pygame.sprite.Sprite):
-    def __init__(self,x,y):
+    def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = load_image("enemigo.png", True)
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / x
         self.rect.centery = HEIGHT / y
 
-    def mover(self,nave1):
+    def mover(self, nave1):
         if self.rect.top >= 0:
             self.rect.centerx -= 1
             if self.rect.bottom <= WIDTH:
@@ -52,6 +51,19 @@ class Alien(pygame.sprite.Sprite):
                     nave1.rect.centerx = 1000
                     nave1.rect.centery = 1000
 
+
+class Disparo(pygame.sprite.Sprite):
+    def __init__(self, posicion):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = load_image("disparo.png", True)
+        self.rect = self.image.get_rect()
+        self.rect.midleft = posicion
+        self.velocidad = 10
+
+    def update(self):
+        self.rect.centerx += self.velocidad
+        if self.rect.left > WIDTH:
+            self.kill()
 
 
 # ---------------------------------------------------------------------
@@ -68,9 +80,6 @@ def load_image(filename, transparent=False):
     return image
 
 
-
-
-
 # ---------------------------------------------------------------------
 
 def main():
@@ -79,11 +88,14 @@ def main():
     pygame.display.set_caption("Pruebas Pygame")
 
     background_image = load_image('fondo.jpg')
-    nave1=Nave()
-    alien1=Alien(1.2,1.4)
-    alien2=Alien(0.4,1.9)
-    alien3=Alien(0.2,1.5)
-    alien4=Alien(0.1,1.5)
+    nave1 = Nave()
+    aliens = pygame.sprite.Group(
+        Alien(1.2, 1.4),
+        Alien(0.4, 1.9),
+        Alien(0.2, 1.5),
+        Alien(0.1, 1.5)
+    )
+    disparos = pygame.sprite.Group()
     pygame.mixer.music.load("sonido.mp3")
     pygame.mixer.music.play(2)
 
@@ -93,17 +105,20 @@ def main():
         for eventos in pygame.event.get():
             if eventos.type == QUIT:
                 sys.exit(0)
+            if eventos.type == KEYDOWN and eventos.key == K_SPACE:
+                disparos.add(Disparo(nave1.posicion_disparo()))
 
         screen.blit(background_image, (0, 0))
-        screen.blit(alien1.image, alien1.rect)
-        screen.blit(alien2.image, alien2.rect)
-        screen.blit(alien3.image, alien3.rect)
-        screen.blit(alien4.image, alien4.rect)
-        alien1.mover(nave1)
-        alien2.mover(nave1)
-        alien3.mover(nave1)
-        alien4.mover(nave1)
+        for alien in list(aliens):
+            alien.mover(nave1)
+            screen.blit(alien.image, alien.rect)
         nave1.mover(keys)
+
+        disparos.update()
+        pygame.sprite.groupcollide(disparos, aliens, True, True)
+        for disparo in disparos:
+            screen.blit(disparo.image, disparo.rect)
+
         screen.blit(nave1.image, nave1.rect)
         pygame.display.flip()
     return 0
